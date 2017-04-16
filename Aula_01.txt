@@ -1,0 +1,44 @@
+Data: 07/03/2017
+
+André Felipe Pereira de Araújo
+matrícula: 13/0021725
+
+- O que são sistemas embarcados?
+
+	São sistemas com funções específicas para uma determinada
+	tarefa, e que em um sistema geral pode haver vários desses sistemas.
+
+- O que são sistemas microprocessados?
+
+	São sistemas onde toda informação, quanto recebida como
+	enviada, passa por um processador.
+
+-Apresente aplicações de sistemas embarcados:
+
+- Para a indústria automática:
+
+	O computador que controla a injeção de combustível no
+	carro, O controle do freios ABS.
+
+- Para eletrodomésticos:
+
+	O sistemas de um micro-ondas, Transformar uma TV
+	normal em uma Smart TV,
+
+- Para automação industrial:
+
+	O computador que faz o controle em tempo real de uma
+	CNC, como a Romi 600.
+
+- Cite arquiteturas possíveis e as diferenças entre elas:
+
+
+	ARM, sistema de 32bits, programável para funções especificas
+	FPGA, sistema de arquitetura de hardware específico
+	AVR, sistema de 16bits, programável para funções especificas
+
+- Por quê usamos Raspberry Pi na disciplina, ao inves de outro system
+on chip:
+
+	Porque há uma grande qualidade de recurso sobre o Raspberry Pi.
+	Por atender o objetivo da matéria. Pelo seu poder de Hardware 
