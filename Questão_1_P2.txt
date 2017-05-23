@@ -1,0 +1,162 @@
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <pthread.h>
+ 
+#define IN  0
+#define OUT 1
+ 
+#define LOW  0
+#define HIGH 1
+ 
+#define PIN  24 /* P1-18 */
+#define POUT 4  /* P1-07 */
+
+static int criaGPIO(int pin){
+	#define BUFFER_MAX 3
+	char buffer[BUFFER_MAX];
+	ssize_t bytes_written;
+	int fd;
+ 
+	fd = open("/sys/class/gpio/export", O_WRONLY);
+	if (-1 == fd) {
+		fprintf(stderr, "Erro ao criar GPIO p/criacao!\n");
+		return(-1);
+	}
+ 
+	bytes_written = snprintf(buffer, BUFFER_MAX, "%d", pin);
+	write(fd, buffer, bytes_written);
+	close(fd);
+	return(0);
+}
+
+static int escreveGPIO(int pin, int value){
+	static const char s_values_str[] = "01";
+ 
+	char path[VALUE_MAX];
+	int fd;
+ 
+	snprintf(path, VALUE_MAX, "/sys/class/gpio/gpio%d/value", pin);
+	fd = open(path, O_WRONLY);
+	if (-1 == fd) {
+		fprintf(stderr, "Erro ao abrir a GPIO p/escrita\n");
+		return(-1);
+	}
+ 
+	if (1 != write(fd, &s_values_str[LOW == value ? 0 : 1], 1)) {
+		fprintf(stderr, "Erro ao escrever o valor!\n");
+		return(-1);
+	}
+ 
+	close(fd);
+	return(0);
+}
+
+static int direcaoGPIO(int pin, int dir){
+	static const char s_directions_str[]  = "in\0out";
+ 
+#define DIRECAO_MAX 35
+	char path[DIRECAO_MAX];
+	int fd;
+ 
+	snprintf(path, DIRECAO_MAX, "/sys/class/gpio/gpio%d/direction", pin);
+	fd = open(path, O_WRONLY);
+	if (-1 == fd) {
+		fprintf(stderr, "Erro ao abrir a GPIO para escrever a Direcao!\n");
+		return(-1);
+	}
+ 
+	if (-1 == write(fd, &s_directions_str[IN == dir ? 0 : 3], IN == dir ? 2 : 3)) {
+		fprintf(stderr, "Erro ao setar a Direcao!\n");
+		return(-1);
+	}
+ 
+	close(fd);
+	return(0);
+}
+
+
+void poolbtn(struct pollfd *pfd){
+
+	char buffer, vals[N]={0};
+	int pos=0, test=1, i, s;
+	lseek(pfd->fd, 0, SEEK_SET);
+	read(pfd->fd, &buffer, 1);
+	poll(pfd, 1, -1);
+	while(test){
+		lseek(pfd->fd, 0, SEEK_SET);
+		read(pfd->fd, vals+pos, 1);
+		vals[pos] -= '0';
+		pos=(pos+1)%N;
+		
+		for(s=i=0; i<N;i+==)
+			s +=vals[i];
+		if(buffer=='0')
+			test = s <(N/2);
+		else
+			test = s>(N/2);
+	}
+
+}
+
+void oscilarHz(){
+	
+
+	struct poolfd pfd;
+	pfd.fd=open("/sys/class/gpio24/value")
+
+	//deixa a GPIO habilitada
+	if (-1 == criaGPIO(POUT) || -1 == criaGPIO(PIN))
+		return(1);
+
+	//seta a direcao
+	if (-1 == direcaoGPIO(POUT, OUT) || -1 == direcaoGPIO(PIN, IN))
+		return(2);
+
+	while(1){
+		if (-1 == escreveGPIO(POUT, HIGH))
+			return(3);
+		if (-1 == escreveGPIO(POUT, LOW))
+			return(3);
+		sleep(pfd.fd/2);
+	}
+
+}
+
+void *criar_poolbtn(void *arg){
+	int a = *((int *) arg);
+
+	poolbtn(a);
+
+	free(arg);//libera memoria
+
+	
+	return NULL;
+}
+
+void *criar_osciladorHz(void *arg){
+
+	oscilarHz();
+	free(arg);
+	
+	return NULL;
+}
+
+int main(){
+
+	pthread_t thread1_id;
+	pthread_t thread2_id;
+
+
+	pthread_create(&thread1_id, NULL, &criar_serer_8030, PIN);
+	pthread_create(&thread2_id, NULL, &criar_serer_4030, NULL);
+
+	pthread_join(thread1_id, NULL);
+	pthread_join(thread2_id, NULL);
+
+	return 0;
+
+}
